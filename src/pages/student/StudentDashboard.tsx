@@ -1,52 +1,60 @@
 
 import { useState } from "react";
 import Navbar from "@/components/layout/Navbar";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, FileText, Calendar, Clock, CheckCircle, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Card, CardContent } from "@/components/ui/card";
+import { Calendar, BookOpen, FileEdit, Users } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 const StudentDashboard = () => {
   const [studentName] = useState("John Doe");
-  
-  // Sample data for the dashboard
-  const dashboardData = {
-    courses: 5,
-    assignments: {
-      pending: 3,
-      completed: 8,
-      total: 11
-    },
-    attendance: {
-      percentage: 85,
-      present: 17,
-      total: 20
-    },
-    upcomingAssignments: [
-      { id: 1, title: "Database Design Project", course: "Database Management", dueDate: "2025-05-30" },
-      { id: 2, title: "User Interface Mockups", course: "Human-Computer Interaction", dueDate: "2025-06-05" },
-      { id: 3, title: "Algorithm Analysis", course: "Data Structures & Algorithms", dueDate: "2025-06-10" },
-    ],
-    courses: [
-      { id: 1, code: "CS301", title: "Database Management", instructor: "Dr. Jane Smith" },
-      { id: 2, code: "CS302", title: "Human-Computer Interaction", instructor: "Prof. David Lee" },
-      { id: 3, code: "CS303", title: "Data Structures & Algorithms", instructor: "Dr. Robert Chen" },
-      { id: 4, code: "CS304", title: "Computer Networks", instructor: "Prof. Sarah Wilson" },
-    ]
-  };
+  const [studentId] = useState("S12345");
+  const [attendanceData] = useState([
+    { subject: "Mathematics", attendance: 85 },
+    { subject: "Physics", attendance: 92 },
+    { subject: "Computer Science", attendance: 78 },
+    { subject: "English", attendance: 88 },
+    { subject: "Chemistry", attendance: 75 },
+  ]);
 
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  };
+  const [upcomingAssignments] = useState([
+    {
+      id: 1,
+      title: "Database Design",
+      course: "Database Management",
+      dueDate: "2025-05-28",
+    },
+    {
+      id: 2,
+      title: "UI Mockup",
+      course: "Human-Computer Interaction",
+      dueDate: "2025-06-03",
+    },
+    {
+      id: 3,
+      title: "Algorithm Analysis",
+      course: "Data Structures",
+      dueDate: "2025-06-07",
+    },
+  ]);
 
-  const getDaysRemaining = (dateStr: string) => {
-    const today = new Date();
-    const dueDate = new Date(dateStr);
-    const diffTime = dueDate.getTime() - today.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    return diffDays;
+  const [enrolledCourses] = useState([
+    { id: 1, name: "Database Management", instructor: "Dr. Jane Smith", progress: 65 },
+    { id: 2, name: "Data Structures", instructor: "Prof. Robert Johnson", progress: 75 },
+    { id: 3, name: "Human-Computer Interaction", instructor: "Dr. Emily Brown", progress: 40 },
+  ]);
+
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
   return (
@@ -54,164 +62,126 @@ const StudentDashboard = () => {
       <Navbar userType="student" userName={studentName} />
       
       <div className="page-container">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Welcome back, {studentName}</h1>
-          <p className="text-secondary mt-2">Here's an overview of your academic progress</p>
-        </div>
+        <h1 className="text-3xl font-bold mb-2">Student Dashboard</h1>
+        <p className="text-secondary mb-8">Welcome back, {studentName}</p>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="card-hover">
+          <Card className="shadow-md">
             <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <p className="text-sm text-secondary">Enrolled Courses</p>
-                  <p className="text-3xl font-bold">{dashboardData.courses.length}</p>
+              <div className="flex items-center">
+                <div className="p-3 bg-blue-100 rounded-full mr-4">
+                  <BookOpen className="h-6 w-6 text-primary" />
                 </div>
-                <div className="p-3 rounded-full bg-primary-light/10 text-primary">
-                  <BookOpen size={24} />
+                <div>
+                  <p className="text-secondary text-sm">Enrolled Courses</p>
+                  <h3 className="text-2xl font-bold">{enrolledCourses.length}</h3>
                 </div>
               </div>
-              <Link to="/student/courses" className="text-accent hover:text-accent-dark text-sm flex items-center mt-4">
-                View all courses <ArrowRight size={14} className="ml-1" />
-              </Link>
             </CardContent>
           </Card>
           
-          <Card className="card-hover">
+          <Card className="shadow-md">
             <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <p className="text-sm text-secondary">Assignments</p>
-                  <p className="text-3xl font-bold">{dashboardData.assignments.pending} <span className="text-sm text-secondary font-normal">pending</span></p>
+              <div className="flex items-center">
+                <div className="p-3 bg-green-100 rounded-full mr-4">
+                  <FileEdit className="h-6 w-6 text-accent" />
                 </div>
-                <div className="p-3 rounded-full bg-accent-light/10 text-accent">
-                  <FileText size={24} />
+                <div>
+                  <p className="text-secondary text-sm">Pending Assignments</p>
+                  <h3 className="text-2xl font-bold">{upcomingAssignments.length}</h3>
                 </div>
               </div>
-              <div className="w-full bg-light mt-4 rounded-full h-2">
-                <div 
-                  className="bg-accent h-2 rounded-full" 
-                  style={{ 
-                    width: `${(dashboardData.assignments.completed / dashboardData.assignments.total) * 100}%` 
-                  }}
-                />
-              </div>
-              <p className="text-sm text-secondary mt-2">
-                {dashboardData.assignments.completed} of {dashboardData.assignments.total} completed
-              </p>
             </CardContent>
           </Card>
           
-          <Card className="card-hover">
+          <Card className="shadow-md">
             <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <p className="text-sm text-secondary">Attendance</p>
-                  <p className="text-3xl font-bold">{dashboardData.attendance.percentage}%</p>
+              <div className="flex items-center">
+                <div className="p-3 bg-amber-100 rounded-full mr-4">
+                  <Calendar className="h-6 w-6 text-amber-500" />
                 </div>
-                <div className="p-3 rounded-full bg-primary-light/10 text-primary">
-                  <Calendar size={24} />
+                <div>
+                  <p className="text-secondary text-sm">Average Attendance</p>
+                  <h3 className="text-2xl font-bold">
+                    {Math.round(
+                      attendanceData.reduce((acc, curr) => acc + curr.attendance, 0) /
+                        attendanceData.length
+                    )}%
+                  </h3>
                 </div>
               </div>
-              <div className="w-full bg-light mt-4 rounded-full h-2">
-                <div 
-                  className="bg-primary h-2 rounded-full" 
-                  style={{ width: `${dashboardData.attendance.percentage}%` }}
-                />
-              </div>
-              <p className="text-sm text-secondary mt-2">
-                {dashboardData.attendance.present} of {dashboardData.attendance.total} classes attended
-              </p>
             </CardContent>
           </Card>
         </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="card-hover">
-            <CardHeader>
-              <CardTitle>Upcoming Assignments</CardTitle>
-              <CardDescription>Assignments due in the next 14 days</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {dashboardData.upcomingAssignments.length > 0 ? (
-                <div className="space-y-4">
-                  {dashboardData.upcomingAssignments.map((assignment) => {
-                    const daysLeft = getDaysRemaining(assignment.dueDate);
-                    return (
-                      <div key={assignment.id} className="flex items-center justify-between p-3 bg-light rounded-md">
-                        <div className="flex items-start space-x-3">
-                          <div className="p-2 mt-1 rounded-full bg-accent-light/30 text-accent">
-                            <FileText size={16} />
-                          </div>
-                          <div>
-                            <h4 className="font-medium text-primary-dark">{assignment.title}</h4>
-                            <p className="text-sm text-secondary">{assignment.course}</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <div className={`flex items-center text-sm ${
-                            daysLeft <= 2 ? 'text-red-500' : 'text-secondary'
-                          }`}>
-                            <Clock size={14} className="mr-1" />
-                            <span>Due {formatDate(assignment.dueDate)}</span>
-                          </div>
-                          {daysLeft <= 2 && (
-                            <p className="text-xs text-red-500 mt-1">{daysLeft} {daysLeft === 1 ? 'day' : 'days'} left</p>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                  
-                  <Button asChild variant="outline" className="w-full mt-2">
-                    <Link to="/student/assignments">View All Assignments</Link>
-                  </Button>
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <CheckCircle className="mx-auto h-12 w-12 text-green-500 opacity-80" />
-                  <h3 className="mt-2 text-xl font-medium text-primary">All caught up!</h3>
-                  <p className="text-secondary mt-1">You don't have any upcoming assignments</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-          
-          <Card className="card-hover">
-            <CardHeader>
-              <CardTitle>My Courses</CardTitle>
-              <CardDescription>Currently enrolled courses</CardDescription>
-            </CardHeader>
-            <CardContent>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          <Card className="shadow-md">
+            <CardContent className="pt-6">
+              <h3 className="text-xl font-semibold mb-4">Upcoming Assignments</h3>
               <div className="space-y-4">
-                {dashboardData.courses.map((course) => (
-                  <div key={course.id} className="p-3 bg-light rounded-md">
-                    <div className="flex items-center justify-between">
+                {upcomingAssignments.map((assignment) => (
+                  <div key={assignment.id} className="border-b pb-3 last:border-0">
+                    <div className="flex justify-between items-start">
                       <div>
-                        <div className="flex items-center">
-                          <span className="text-xs font-medium bg-primary/10 text-primary px-2 py-0.5 rounded">
-                            {course.code}
-                          </span>
-                        </div>
-                        <h4 className="font-medium text-primary-dark mt-1">{course.title}</h4>
-                        <p className="text-sm text-secondary">Instructor: {course.instructor}</p>
+                        <p className="font-medium">{assignment.title}</p>
+                        <p className="text-sm text-secondary">{assignment.course}</p>
                       </div>
-                      <Button size="sm" asChild variant="ghost">
-                        <Link to={`/student/courses/${course.id}`}>
-                          <ArrowRight size={16} />
-                        </Link>
-                      </Button>
+                      <div className="text-sm text-right">
+                        <p className="font-medium">Due Date</p>
+                        <p className="text-secondary">{formatDate(assignment.dueDate)}</p>
+                      </div>
                     </div>
                   </div>
                 ))}
-                
-                <Button asChild variant="outline" className="w-full mt-2">
-                  <Link to="/student/courses">Browse More Courses</Link>
-                </Button>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="shadow-md">
+            <CardContent className="pt-6">
+              <h3 className="text-xl font-semibold mb-4">Attendance Overview</h3>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={attendanceData}
+                    margin={{
+                      top: 5,
+                      right: 5,
+                      left: 5,
+                      bottom: 5,
+                    }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="subject" tick={{ fontSize: 12 }} />
+                    <YAxis domain={[0, 100]} />
+                    <Tooltip />
+                    <Bar dataKey="attendance" fill="#3A7CA5" />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
         </div>
+        
+        <Card className="shadow-md mb-8">
+          <CardContent className="pt-6">
+            <h3 className="text-xl font-semibold mb-4">Course Progress</h3>
+            <div className="space-y-6">
+              {enrolledCourses.map((course) => (
+                <div key={course.id}>
+                  <div className="flex justify-between items-center mb-2">
+                    <div>
+                      <p className="font-medium">{course.name}</p>
+                      <p className="text-sm text-secondary">{course.instructor}</p>
+                    </div>
+                    <p className="font-medium">{course.progress}%</p>
+                  </div>
+                  <Progress value={course.progress} className="h-2" />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </>
   );
