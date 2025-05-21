@@ -3,6 +3,33 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+// Auth Pages
+import LoginPage from "./pages/auth/LoginPage";
+import SignupPage from "./pages/auth/SignupPage";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
+
+// Student Pages
+import StudentDashboard from "./pages/student/StudentDashboard";
+
+// Faculty Pages
+import FacultyDashboard from "./pages/faculty/FacultyDashboard";
+import AssignmentsPage from "./pages/faculty/AssignmentsPage";
+import CreateAssignmentPage from "./pages/faculty/CreateAssignmentPage";
+import GradeSubmissionsPage from "./pages/faculty/GradeSubmissionsPage";
+import GradeStudentSubmissionPage from "./pages/faculty/GradeStudentSubmissionPage";
+
+// Admin Pages
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import ManageFacultyPage from "./pages/admin/ManageFacultyPage";
+import RegisterFacultyPage from "./pages/admin/RegisterFacultyPage";
+
+// Attendance Pages
+import FacultyAttendancePage from "./pages/attendance/FacultyAttendancePage";
+import StudentAttendancePage from "./pages/attendance/StudentAttendancePage";
+import ExamTimetablePage from "./pages/attendance/ExamTimetablePage";
+
+// Others
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
@@ -15,8 +42,35 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          {/* Default landing page */}
+          <Route path="/" element={<LoginPage />} />
+          
+          {/* Auth Routes */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          
+          {/* Student Routes */}
+          <Route path="/student/dashboard" element={<StudentDashboard />} />
+          <Route path="/student/attendance" element={<StudentAttendancePage />} />
+          
+          {/* Faculty Routes */}
+          <Route path="/faculty/dashboard" element={<FacultyDashboard />} />
+          <Route path="/faculty/assignments" element={<AssignmentsPage />} />
+          <Route path="/faculty/assignments/create" element={<CreateAssignmentPage />} />
+          <Route path="/faculty/assignments/:assignmentId/grade" element={<GradeSubmissionsPage />} />
+          <Route path="/faculty/assignments/:assignmentId/grade/:studentId" element={<GradeStudentSubmissionPage />} />
+          <Route path="/faculty/attendance" element={<FacultyAttendancePage />} />
+          
+          {/* Admin Routes */}
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/faculty" element={<ManageFacultyPage />} />
+          <Route path="/admin/faculty/register" element={<RegisterFacultyPage />} />
+          
+          {/* Shared Routes */}
+          <Route path="/exams/timetable" element={<ExamTimetablePage />} />
+          
+          {/* Catch-all route */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
